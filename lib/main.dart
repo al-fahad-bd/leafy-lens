@@ -1,10 +1,25 @@
-import 'package:ai_design_with_plants/core/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ai_design_with_plants/core/services/ai_service.dart';
+import 'package:ai_design_with_plants/features/design/design_screen.dart';
+import 'package:ai_design_with_plants/features/design/design_controller.dart';
 
 void main() async {
-  await dotenv.load(fileName: "key.env");
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    // Load environment variables
+    await dotenv.load(fileName: "key.env");
+    print('Environment variables loaded successfully');
+  } catch (e) {
+    print('Error loading environment variables: $e');
+  }
+
+  // Initialize services and controllers
+  Get.put(AIService());
+  Get.put(DesignController());
+
   runApp(const MyApp());
 }
 
@@ -16,28 +31,10 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'AI Design with Plants',
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF34C759),
-          primary: const Color(0xFF34C759),
-          secondary: Colors.lightGreen,
-          brightness: Brightness.light,
-        ),
-        fontFamily: 'Urbanist', // I will need to add this font
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF34C759),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
       ),
-      initialRoute: AppPages.initial,
-      getPages: AppPages.routes,
+      home: const DesignScreen(),
     );
   }
 }

@@ -10,37 +10,103 @@ class DesignScreen extends GetView<DesignController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Get.back(),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        title: const Text('Design with Plants'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: controller.saveDesign,
+          ),
+        ],
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            flex: 3,
-            child: Image.file(File(controller.imagePath), fit: BoxFit.cover),
-          ),
+          // Image Preview Section
           Expanded(
             flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Add plants',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            child: Obx(() {
+              if (controller.selectedImagePath.value == null) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.image, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No image selected',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: controller.selectImage,
+                            icon: const Icon(Icons.photo_library),
+                            label: const Text('Gallery'),
+                          ),
+                          const SizedBox(width: 16),
+                          ElevatedButton.icon(
+                            onPressed: controller.captureImage,
+                            icon: const Icon(Icons.camera_alt),
+                            label: const Text('Camera'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  _buildPlantList(),
-                  const Spacer(),
-                  _buildActionButtons(),
+                );
+              }
+
+              if (controller.isGenerating.value) {
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Generating design...'),
+                    ],
+                  ),
+                );
+              }
+
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.file(
+                    File(
+                      controller.generatedDesignPath.value ??
+                          controller.selectedImagePath.value!,
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                  if (controller.generatedDesignPath.value == null)
+                    Positioned(
+                      bottom: 16,
+                      right: 16,
+                      child: FloatingActionButton(
+                        onPressed: controller.generateDesign,
+                        child: const Icon(Icons.auto_fix_high),
+                      ),
+                    ),
                 ],
-              ),
+              );
+            }),
+          ),
+
+          // Plant Selection Section
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Select a Plant',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _buildPlantList(),
+              ],
             ),
           ),
         ],
@@ -77,15 +143,46 @@ class DesignScreen extends GetView<DesignController> {
                     child: Column(
                       children: [
                         Expanded(
-                          // TODO: Replace with Image.asset
-                          child: Container(
-                            color: Colors.grey[300],
-                            margin: const EdgeInsets.all(8),
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12),
+                            ),
+                            child: Image.network(
+                              plant.imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[300],
+                                  child: const Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      color: Colors.grey[300],
+                                      child: const Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  },
+                            ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(plant.name, textAlign: TextAlign.center),
+                          child: Text(
+                            plant.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -96,26 +193,6 @@ class DesignScreen extends GetView<DesignController> {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton(
-            onPressed: controller.undo,
-            child: const Text('Undo'),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: controller.addPlant,
-            child: const Text('Add'),
-          ),
-        ),
-      ],
     );
   }
 }

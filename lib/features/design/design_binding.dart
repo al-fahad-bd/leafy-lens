@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 class DesignBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AIService>(() => AIService());
-    Get.lazyPut<DesignController>(() => DesignController());
+    // Initialize AIService first
+    Get.put<AIService>(AIService(), permanent: true);
+    // Then initialize DesignController
+    Get.put<DesignController>(DesignController());
   }
 }
