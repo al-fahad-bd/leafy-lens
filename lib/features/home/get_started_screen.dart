@@ -23,7 +23,7 @@ class GetStartedScreen extends GetView<GetStartedController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  const Text(
                     'Transform Your Space with Plants',
                     textAlign: TextAlign.center,
                     style: TextStyle(

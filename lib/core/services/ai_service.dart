@@ -290,7 +290,7 @@ class AIService extends GetxController {
 
     int attempts = 0;
     while (attempts < 10) {
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
 
       final response = await http.get(
         Uri.parse('https://api.replicate.com/v1/predictions/$predictionId'),

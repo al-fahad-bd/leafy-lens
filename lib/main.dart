@@ -11,9 +11,9 @@ void main() async {
   try {
     // Load environment variables
     await dotenv.load(fileName: "key.env");
-    print('Environment variables loaded successfully');
+    debugPrint('Environment variables loaded successfully');
   } catch (e) {
-    print('Error loading environment variables: $e');
+    debugPrint('Error loading environment variables: $e');
   }
 
   // Initialize services and controllers
