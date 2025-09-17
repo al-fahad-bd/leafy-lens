@@ -9,7 +9,7 @@ class SignUpController extends GetxController {
 
   void signUp() {
     debugPrint('Signing up...');
-    Get.offAllNamed(Routes.home); // Navigate to home after sign up
+    Get.offAllNamed(Routes.home);
   }
 
   @override
