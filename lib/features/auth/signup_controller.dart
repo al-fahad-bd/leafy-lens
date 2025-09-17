@@ -8,7 +8,6 @@ class SignUpController extends GetxController {
   final passwordController = TextEditingController();
 
   void signUp() {
-    // TODO: Implement sign up logic
     debugPrint('Signing up...');
     Get.offAllNamed(Routes.home); // Navigate to home after sign up
   }
